@@ -1,0 +1,30 @@
+{
+  "name": "@vandeurenglenn/connect-wallet",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "connect",
+    "wallet"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@walletconnect/modal": "^2.6.2",
+    "@walletconnect/sign-client": "^2.14.0",
+    "chainmap": "^0.0.311",
+    "ethers": "^6.13.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.19.1",
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "tslib": "^2.6.3"
+  }
+}
