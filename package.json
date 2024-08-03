@@ -18,6 +18,9 @@
       "types": "./exports/provider.d.ts"
     }
   },
+  "files": [
+    "exports"
+  ],
   "keywords": [
     "connect",
     "wallet"
