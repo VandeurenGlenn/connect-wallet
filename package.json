@@ -7,6 +7,17 @@
     "build": "rollup -c",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "browser": "./exports/connect-wallet.js",
+  "exports": {
+    ".": {
+      "import": "./exports/connect-wallet.js",
+      "types": "./exports/connect-wallet.d.ts"
+    },
+    "./provider": {
+      "import": "./exports/provider.js",
+      "types": "./exports/provider.d.ts"
+    }
+  },
   "keywords": [
     "connect",
     "wallet"

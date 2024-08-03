@@ -22,7 +22,7 @@ const clean = async () => {
 
 export default [
   {
-    input: ['./src/connect-wallet.ts'],
+    input: ['./src/connect-wallet.ts', './src/provider.ts'],
     output: [
       {
         format: 'es',
