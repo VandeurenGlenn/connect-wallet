@@ -16,7 +16,7 @@ export default class ConnectWallet {
   set chainId(value) {
     if (this.#chainId !== value) {
       this.#chainId = value
-      this.changeNetwork(value)
+      this.#changeNetwork()
     }
   }
 
@@ -43,7 +43,6 @@ export default class ConnectWallet {
   // dynamic events, see connect
   #connect_metamask = async () => {
     const provider = new BrowserProvider(globalThis.ethereum, 'any') as BrowserProvider
-    this.provider = new Provider(this.chainId)
     // Prompt user for account connections
 
     const accounts = await ethereum.request({ method: 'eth_requestAccounts' })
@@ -93,8 +92,8 @@ export default class ConnectWallet {
     )
     globalThis.dispatchEvent(new CustomEvent('networkChange', { detail: this.chainId }))
 
-    const provider = new Provider(this.chainId)
-    this.provider = provider
+    // const provider = new Provider(this.chainId)
+    // this.provider = provider
 
     this.signer = {
       getAddress: () => globalThis.walletConnect.getAccounts(),
@@ -120,35 +119,40 @@ export default class ConnectWallet {
     return this.connect(walletProvider)
   }
 
+  #changeNetwork = async () => {
+    this.provider = new Provider(this.chainId)
+    const chainInfo = chainMap[this.chainId]
+    if (this.walletProvider === 'metamask') {
+      let id = toBeHex(this.chainId).toString()
+      if (id.split('0x')[1].startsWith('0')) id = id.replace('0x0', '0x')
+      try {
+        await globalThis.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: id }] })
+      } catch (error) {
+        // try adding the network
+        try {
+          await globalThis.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: id,
+                blockExplorerUrls: [chainInfo.blockExplorerUrls],
+                rpcUrls: chainInfo.rpc,
+                chainName: chainInfo.name,
+                nativeCurrency: chainInfo.currency
+              }
+            ]
+          })
+        } catch {}
+      }
+    } else {
+      globalThis.dispatchEvent(new CustomEvent('networkChange', { detail: chainId }))
+    }
+  }
+
   async changeNetwork(chainId: number) {
     if (this.chainId !== chainId) {
       this.chainId = chainId
-      const chainInfo = chainMap[chainId]
-      if (this.walletProvider === 'metamask') {
-        let id = toBeHex(chainId).toString()
-        if (id.split('0x')[1].startsWith('0')) id = id.replace('0x0', '0x')
-        try {
-          await globalThis.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: id }] })
-        } catch (error) {
-          // try adding the network
-          try {
-            await globalThis.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: id,
-                  blockExplorerUrls: [chainInfo.blockExplorerUrls],
-                  rpcUrls: chainInfo.rpc,
-                  chainName: chainInfo.name,
-                  nativeCurrency: chainInfo.currency
-                }
-              ]
-            })
-          } catch {}
-        }
-      } else {
-        globalThis.dispatchEvent(new CustomEvent('networkChange', { detail: chainId }))
-      }
+      this.#changeNetwork()
     }
   }
 }
