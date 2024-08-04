@@ -44,7 +44,7 @@ export default class ConnectWallet {
     }
   }
   // dynamic events, see connect
-  #connect_metamask = async () => {
+  _connect_metamask = async () => {
     const provider = new BrowserProvider(globalThis.ethereum, 'any') as BrowserProvider
     // Prompt user for account connections
 
@@ -64,7 +64,7 @@ export default class ConnectWallet {
     pubsub.publish('networkChange', Number(_chainId))
   }
 
-  #connect_walletConnect = async () => {
+  _connect_walletConnect = async () => {
     if (!this.#WalletConnectModalSign) {
       const { WalletConnectModalSign } = await import('./wallet-connect.js')
       this.#WalletConnectModalSign = WalletConnectModalSign
@@ -102,7 +102,7 @@ export default class ConnectWallet {
     this.walletProvider = walletProvider
     if (chainId) this.chainId = chainId
 
-    return this[`#connect_${walletProvider}`]()
+    return this[`_connect_${walletProvider}`]()
   }
 
   async disconnect() {
