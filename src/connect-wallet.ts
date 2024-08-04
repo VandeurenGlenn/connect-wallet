@@ -3,6 +3,7 @@ import { BrowserProvider, Eip1193Provider, JsonRpcProvider, JsonRpcSigner, toBeH
 import { ConnectWalletOptions, EthereumProvider, WalletConnectOptions, WalletProviderOption } from './types.js'
 import type { WalletConnectModalSign } from './wallet-connect.js'
 import chainMap from 'chainmap'
+import { pubsub } from './pubsub.js'
 
 declare global {
   var ethereum: EthereumProvider
@@ -14,8 +15,10 @@ export default class ConnectWallet {
   #chainId: number
 
   set chainId(value) {
-    if (this.#chainId !== value) {
+    if (this.#chainId !== value && value) {
       this.#chainId = value
+
+      this.provider = new Provider(value)
       this.#changeNetwork()
     }
   }
@@ -53,16 +56,12 @@ export default class ConnectWallet {
     const _chainId = await ethereum.request({ method: 'eth_chainId' })
 
     ethereum // Or window.ethereum if you don't support EIP-6963.
-      .on('chainChanged', (chainId) =>
-        globalThis.dispatchEvent(new CustomEvent('networkChange', { detail: Number(chainId) }))
-      )
+      .on('chainChanged', (chainId) => pubsub.publish('networkChange', Number(chainId)))
 
     ethereum // Or window.ethereum if you don't support EIP-6963.
-      .on('accountsChanged', (accounts) =>
-        globalThis.dispatchEvent(new CustomEvent('accountsChange', { detail: accounts }))
-      )
-    globalThis.dispatchEvent(new CustomEvent('accountsChange', { detail: accounts }))
-    globalThis.dispatchEvent(new CustomEvent('networkChange', { detail: Number(_chainId) }))
+      .on('accountsChanged', (accounts) => pubsub.publish('accountsChange', accounts))
+    pubsub.publish('accountsChange', accounts)
+    pubsub.publish('networkChange', Number(_chainId))
   }
 
   #connect_walletConnect = async () => {
@@ -87,10 +86,8 @@ export default class ConnectWallet {
       })
     }
 
-    globalThis.dispatchEvent(
-      new CustomEvent('accountsChange', { detail: await globalThis.walletConnect.getAccounts() })
-    )
-    globalThis.dispatchEvent(new CustomEvent('networkChange', { detail: this.chainId }))
+    pubsub.publish('accountsChange', await globalThis.walletConnect.getAccounts())
+    pubsub.publish('networkChange', this.chainId)
 
     // const provider = new Provider(this.chainId)
     // this.provider = provider
@@ -119,8 +116,7 @@ export default class ConnectWallet {
     return this.connect(walletProvider)
   }
 
-  #changeNetwork = async () => {
-    this.provider = new Provider(this.chainId)
+  async #changeNetwork() {
     const chainInfo = chainMap[this.chainId]
     if (this.walletProvider === 'metamask') {
       let id = toBeHex(this.chainId).toString()
@@ -145,7 +141,7 @@ export default class ConnectWallet {
         } catch {}
       }
     } else {
-      globalThis.dispatchEvent(new CustomEvent('networkChange', { detail: chainId }))
+      pubsub.publish('networkChange', this.chainId)
     }
   }
 
