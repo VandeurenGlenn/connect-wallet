@@ -31,6 +31,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@vandeurenglenn/little-pubsub": "^1.4.8",
     "@walletconnect/modal": "^2.6.2",
     "@walletconnect/sign-client": "^2.14.0",
     "chainmap": "^0.0.311",

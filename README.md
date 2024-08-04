@@ -27,20 +27,20 @@ const options = {
   }
 }
 
-const walletConnect = new ConnectWallet(options)
+const connectWallet = new ConnectWallet(options)
 
-document.addEventListener('networkChange', ({ detail }) => console.log(detail)) // 1
+connectWallet.subscribe('networkChange', (chainId) => console.log(chainId)) // 1
 
-document.addEventListener('accountsChange', ({ detail }) => console.log(detail)) // [0x0.........]
+connectWallet.subscribe('accountsChange', (accounts) => console.log(accounts)) // [0x0.........]
 
-await walletConnect.connect('metamask')
-console.log(`signer: ${walletConnect.signer}`)
+await connectWallet.connect('metamask')
+console.log(`signer: ${connectWallet.signer}`)
 
-await walletConnect.connect('walletConnect')
-console.log(`signer: ${walletConnect.signer}`)
+await connectWallet.connect('walletConnect')
+console.log(`signer: ${connectWallet.signer}`)
 
 // provider is always the same (if not switching chainId)
-console.log(`provider: ${walletConnect.provider}`)
+console.log(`provider: ${connectWallet.provider}`)
 
-await walletConnect.changeNetwork(56)
+await connectWallet.changeNetwork(56)
 ```

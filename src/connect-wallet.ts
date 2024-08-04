@@ -151,4 +151,8 @@ export default class ConnectWallet {
       this.#changeNetwork()
     }
   }
+
+  subscribe(event, fn) {
+    pubsub.subscribe(event, fn)
+  }
 }
