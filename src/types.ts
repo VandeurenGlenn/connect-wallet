@@ -4,7 +4,19 @@ import { BrowserProvider, Eip1193Provider, JsonRpcSigner } from 'ethers'
 
 export interface EthereumProvider extends Eip1193Provider, BrowserProvider {}
 
-export type ConnectWalletOptions = { chainId?: number }
+export type ConnectWalletOptions = {
+  chainId?: number
+  walletConnect: {
+    projectId: string
+    modalOptions: { themeMode: 'dark' }
+    metadata: {
+      name: string
+      description: string
+      url: string // origin must match your domain & subdomain
+      icons: string[]
+    }
+  }
+}
 
 export type WalletProviderOption = 'metamask' | 'walletConnect'
 

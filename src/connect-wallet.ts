@@ -32,9 +32,13 @@ export default class ConnectWallet {
 
   #WalletConnectModalSign: typeof WalletConnectModalSign
 
-  constructor({ chainId }: ConnectWalletOptions) {
-    if (!chainId) this.chainId = 1
-    else this.chainId = chainId
+  constructor(config: ConnectWalletOptions) {
+    if (!config.chainId) this.chainId = 1
+    else this.chainId = config.chainId
+
+    if (config.walletConnect) {
+      this.#walletConnectOptions = { ...config.walletConnect, chainId: this.chainId }
+    }
   }
   // dynamic events, see connect
   #connect_metamask = async () => {
