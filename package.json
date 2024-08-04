@@ -16,6 +16,9 @@
     "./provider": {
       "import": "./exports/provider.js",
       "types": "./exports/provider.d.ts"
+    },
+    "./types": {
+      "types": "./exports/types.d.ts"
     }
   },
   "files": [
