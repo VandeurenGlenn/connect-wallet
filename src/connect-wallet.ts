@@ -23,7 +23,7 @@ export default class ConnectWallet {
     }
   }
 
-  get chainid() {
+  get chainId() {
     return this.#chainId
   }
 
